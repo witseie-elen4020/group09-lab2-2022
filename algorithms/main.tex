@@ -1,0 +1,116 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\usepackage{algpseudocode}
+
+\SetKw{Kw By}{by}
+\begin{document}
+
+\title{Appendix} 
+\maketitle
+
+\begin{algorithm}
+\caption{naive-OpenMP}
+\SetAlgoLined
+\DontPrintSemicolon
+\state $  Inputs: 2D MatA of size   N0 * N1$\;
+       $  Inputs: matrix\_length, num\_of\_threads$\;
+       #Pragma omp parallel private(i,j)\;
+       \For{$i\gets 0$ \KwTo  $matrix\_length$} {
+           \For{$j\getsi$ \KwTo  $matrix\_length$}{
+                $ temp \gets MatA[i,j]$ \;
+                $ MatA[i,j] \gets MatA[j,i]$ \;
+                $ MatA[j,i] \gets temp$ \;
+           }
+           \EndFor
+           }
+       \EndFor
+\end{algorithm}
+
+
+\begin{algorithm}
+\caption{diagonal-PThreads}
+\SetAlgoLined
+\DontPrintSemicolon
+\state $ Input: 2D MatA of size N0 x N1$\;
+       $ Input: MatA\_length, num\_of\_threads $\;
+       $ Struct MatA\_properties Datahold$\;
+       $ DataHold.Matrix \gets MatA$\;
+       $ DataHold.threads \gets num\_of\_threads$\;
+       $ DataHold.length \gets MatA\_length$\;
+       $ \textbf{pthread\_create}(datahold)$\;
+        \ForEach{thread}{
+           \textbf{Mutex Lock} \;
+           $thread\_id++$\;
+        \textbf{Mutex Unlock} \;
+       \For{$i\gets thread\_id$ \KwTo  $DataHold.length$}{
+         \If{$j $\not=$ i$}{
+         $ temp \gets DataHold.Matrix[i,j]$\;
+         $ DataHold.Matrix[i,j] \gets DataHold.Matrix[j,i]$
+         $ DataHold.Matrix[j,j] \gets temp $\;
+         }
+       }\EndFor
+ }
+
+\end{algorithm}
+
+\begin{algorithm}
+\caption{diagonal-OpenMp}
+\SetAlgoLined
+\DontPrintSemicolon
+\state $ Inputs: 2D MatA of size N0 x N1$\;
+       $ Input: MatA\_length, num\_of\_threads $\;
+        #Pragma omp parallel private(i,j)\;
+       \For{$i\gets 0$ \KwTo  $MatA\_length$}{
+           \For{$j\gets i$ \KwTo  $MatA\_length$}{
+                  \If{$j $\not=$ i$}{
+         $ temp \gets DataHold.Matrix[i,j]$\;
+        $DataHold.Matrix[i,j] \gets DataHold.Matrix[j,i]$\;
+         $ DataHold.Matrix[j,j] \gets temp $\;
+                  }
+           }
+           \EndFor
+       }
+       \EndFor
+\end{algorithm}
+
+
+\begin{algorithm}
+\caption{block-PThreads}
+\SetAlgoLined
+\DontPrintSemicolon
+\state $ Input: 2D MatA of size N0 x N1$\;
+       $ Input: MatA\_length, num\_of\_threads, block\_size$\;
+       $ Struct MatA\_properties Datahold$\;
+       $ DataHold.Matrix \gets MatA$\;
+       $ DataHold.threads \gets num\_of\_threads$\;
+       $ DataHold.length \gets MatA\_length$\;
+        $ DataHold.block\_size \gets MatA\_length$\;
+       $ \textbf{pthread\_create}(datahold)$\;
+       \ForEach{thread}{
+           $thread\_id \gets 0$\;
+           $\textbf{Mutex Lock}$\;
+           $thread\_id \gets DataHold.thread\_id$
+           $ DataHold.thread\_id++$\;
+           $ \textbf{Mutex Unlock}$ \;
+            $ \textbf{transpose\_block\_elements}(thread\_id)$\;
+            $ \textbf{pthread\_barrier\_wait}(num\_of\_threads)$\;
+             $ \textbf{transpose\_matrix\_blocks}(MatA)$\;
+       }
+\end{algorithm}
+
+\begin{algorithm}
+\caption{block-OpenMP}
+\SetAlgoLined
+\DontPrintSemicolon
+\state $ Input: 2D MatA of size N0 x N1$\;
+       $ Input: MatA\_length, num\_of\_threads, block\_size$\;
+       $block\_length \gets MatA\_length/block\_size$\;
+       $ \textbf{omp\_set\_num\_thread}(num\_of\_threads)$\;
+        #Pragma omp parallel for\;
+          \ForEach{thread}{
+                $ \textbf{transpose\_block\_elements}()$\;
+          }
+          #Pragma omp barrier\;
+         $ \textbf{transpose\_matrix\_blocks}(MatA)$\;
+\end{algorithm}
+\end{document}

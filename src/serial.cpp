@@ -5,12 +5,12 @@
 
 using namespace std;
 
+
 void transpose(int **matrixA, int matrix_dim)
 {
 
     int i = 0, j = 0;
     auto start = omp_get_wtime();
-    #pragma omp parallel private(i,j)
     for (i = 0; i < matrix_dim; i++)
     {
         for (j = i; j < matrix_dim; j++)
@@ -24,6 +24,7 @@ void transpose(int **matrixA, int matrix_dim)
     double total = (stop - start);
     cout << "Took: " << total << " s" << endl;       
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -53,5 +54,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-
